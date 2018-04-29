@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	<meta charset="utf-8"/>
+    <style type="text/css">
+       .c {
+        text-align: center;
+      }
+
+      div,
+      input {
+        padding: 5px;
+        font-size: 1em;
+      }
+
+      input {
+        width: 95%;
+      }
+
+      body {
+        text-align: center;
+        font-family: verdana;
+      }
+
+      button {
+        border: 0;
+        border-radius: 0.3rem;
+        background-color: #1fa3ec;
+        color: #fff;
+        line-height: 2.4rem;
+        font-size: 1.2rem;
+        width: 100%;
+      }
+    </style>
+  </head>
+
+  <body>
+    <form action='/phrase' method='post'>
+      <div>
+        <input type="text" id="phrase" maxlength="32" placeholder="treedoot" required>
+      </div>
+      <div>
+        <button>Update Machine</button>
+      </div>
+    </form>
+  </body>
+
+</html>
