@@ -7,39 +7,80 @@
 #define MIN_STR_LEN 8
 #define MAX_MSG_LEN 50
 
-#define SSID_DEFAULT "StrangerThings"
+#define SSID_DEFAULT "Strange "
 #define PASS_DEFAULT "password"
+#define MESS_DEFAULT "Help Me"
 
 struct config_t{
   char ssid[MAX_STR_LEN] = SSID_DEFAULT;
   char pass[MAX_STR_LEN] = PASS_DEFAULT;
-  char message[MAX_MSG_LEN] = "Help Me";
+  char message[MAX_MSG_LEN] = MESS_DEFAULT;
 } config;
+
+void InitConfig() {
+  // Declare an area of eeprom where the variables are stored
+  EEPROM.begin(sizeof(config));
+}
 
 // Writes the config values back to EEPROM
 void SaveConfig() {
+  Serial.printf("Save Config\n");
+
   // Store the new settings to EEPROM
   EEPROM_writeAnything(0,  config);    
+  EEPROM.commit();
+}
+
+void ResetConfig() {
+  Serial.printf("Reset Config\n");
+  
+  // If the EEROM isn't valid then create a unique name for the wifi
+  sprintf(config.ssid, "%s%06X", SSID_DEFAULT, ESP.getChipId());
+  sprintf(config.pass, PASS_DEFAULT);
+  sprintf(config.message, MESS_DEFAULT);
+  
+  SaveConfig();
+}
+
+bool ValidateString(char* value) {
+  bool valid = true;
+  
+  //Check to see if the string is an acceptable length
+  if((strlen(value) < MIN_STR_LEN) && (strlen(value) >= MAX_STR_LEN)) {
+    valid = false;
+  }
+  else {
+    //Check each character in the string to make sure it is alphanumeric or space
+    for(uint8_t i = 0; i < strlen(value); i++)
+      if(!isAlphaNumeric(value[i]))
+        if(!isSpace(value[i]))
+          valid = false;
+  }
+  
+  return valid;
 }
 
 // Loads the config values from EEPROM, leaves the default values if the EEPROM hasn't been set yet
 void LoadConfig() {
-   // Declare an area of eeprom where the variables are stored
-  EEPROM.begin(sizeof(config));
-
+  bool eepromValid = true;
+  
   // Load the config variables from EEPROM
   config_t eepromConfig;
   EEPROM_readAnything(0, eepromConfig);
 
   //Check to see if the config variables loaded from eeprom are valid
-  if(((strlen(eepromConfig.ssid) >= MIN_STR_LEN) && (strlen(eepromConfig.ssid) < MAX_STR_LEN)) || 
-     (strlen(eepromConfig.pass) < MAX_STR_LEN)) {
+  eepromValid &= ValidateString(eepromConfig.ssid);
+  eepromValid &= ValidateString(eepromConfig.pass);
+  eepromValid &= ValidateString(eepromConfig.message);
+
+  if(eepromValid) {
     strcpy(config.ssid, eepromConfig.ssid);
     strcpy(config.pass, eepromConfig.pass);
     strcpy(config.message, eepromConfig.message);
   }  
   else {
     // If the EEROM isn't valid then create a unique name for the wifi
+    ResetConfig();
     SaveConfig();
   }
 }

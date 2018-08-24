@@ -27,27 +27,28 @@ ESP8266WebServer webServer(HTTP_PORT);
 
 void setup() {
   // put your setup code here, to run once:
-  Serial.begin(115200);  Serial.printf("\nStranger Things 0.2\n");
+  Serial.begin(115200);  Serial.printf("\nStranger Things\n");
     
+  InitConfig();
+  
+  //Start the wifi with the required username and password
+  WiFi.mode(WIFI_AP);
+
+  LoadConfig();
+  //ResetConfig();
+  PrintConfig();
+
   //Check to see if the flag is still set from the previous boot
   if(checkResetFlag()) {
     //Do the firmware reset here
     Serial.printf("Reset Firmware\n");
 
     //Set the ssid to default value and turn off the password
-    LoadConfig();
-    strcpy(config.ssid, "APConfig");
-    strcpy(config.pass, "");
+    WiFi.softAP("APConfig", "", 1, false, 1);
   } 
   else {
-      LoadConfig();
+      WiFi.softAP(config.ssid, config.pass, 1, false, 1);
   }
-
-  PrintConfig();
-  
-  //Start the wifi with the required username and password
-  WiFi.mode(WIFI_AP);
-  WiFi.softAP(config.ssid, config.pass, 1, false, 1);
 
   //Serve a very basic page on the root url
   webServer.on("/", serveMessage);
@@ -91,7 +92,16 @@ void serveMessage() {
  }
   
   //Serve a HTML page containing an input button
-  String htmlPage = "<form action='/'><input type='text' name='message' value='$v' maxlength='49'><input type='submit' value='Update Message'></form>";
+  String htmlPage = "<html>"
+                      "<head>"
+                        "<style>input {font-size: 1.2em; width: 90%; display: block; margin: 5px auto; } </style>"
+                      "</head>"
+                      "<body>"
+                        "<form action='/'>"
+                        "<input type='text' name='message' value='$v' maxlength='49'><input type='submit' value='Update Message'>"
+                      "</body>"
+                    "</form>";
+  
   htmlPage.replace("$v", config.message);
   webServer.send(200, "text/html", htmlPage);
 }
