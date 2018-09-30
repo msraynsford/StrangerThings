@@ -14,7 +14,7 @@ Once the connection has been established, your phone should automatically load a
 If you are still not able to load the page by typing the URL into the browser, it is possible to reach the right page by typing in the IP address http://192.168.4.1/
 
 # Changing the SSID and Password
-It is recommended to change the password for the WiFi network as soon as possible, there is a separate admin page that allows you to do this. If you navigate the browser to "http://beest.local/admin" you will be presented with this page
+It is recommended to change the password for the WiFi network as soon as possible, there is a separate admin page that allows you to do this. If you navigate the browser to "http://stranger.local/admin" you will be presented with this page
 
 ![alt text](https://github.com/msraynsford/WifiBeest/blob/master/WifiBeestAdmin.png "Admin Image")
 
